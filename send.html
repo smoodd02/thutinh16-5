@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gửi thư tình</title>
+</head>
+<body>
+  <h1>Gửi thư tình</h1>
+  <!-- Form nhập thông tin -->
+  <form id="letterForm">
+    <label>Người nhận: <input type="text" id="receiver" required></label><br><br>
+    <label>Nội dung thư:<br><textarea id="content" rows="6" cols="40" required></textarea></label><br><br>
+    <label>Hình ảnh: <input type="file" id="images" multiple accept="image/*"></label><br><br>
+    <label>Người gửi: <input type="text" id="sender" required></label><br><br>
+    <label>Font chữ: 
+      <select id="font">
+        <option value="sans-serif">Sans-serif</option>
+        <option value="cursive">Cursive</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Indie Flower">Indie Flower</option>
+      </select>
+    </label><br><br>
+    <label>Mật khẩu riêng: <input type="password" id="password" required></label><br><br>
+    <button type="submit">Tạo thư</button>
+  </form>
+  <p id="linkResult"></p>
+  <script>
+    document.getElementById("letterForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const id = Math.random().toString(36).substring(2, 10);
+      const readerId = "loveLetter_" + id;
+      const images = document.getElementById("images").files;
+      const imageUrls = [];
+
+      for (const file of images) {
+        const url = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+        imageUrls.push(url);
+      }
+
+      const data = {
+        receiver: document.getElementById("receiver").value,
+        content: document.getElementById("content").value,
+        images: imageUrls,
+        sender: document.getElementById("sender").value,
+        font: document.getElementById("font").value,
+        password: document.getElementById("password").value,
+      };
+
+      localStorage.setItem(readerId, JSON.stringify(data));
+      const link = location.origin + "/read.html?id=" + id;
+      document.getElementById("linkResult").innerHTML = '<a href="' + link + '" target="_blank">Link tới thư: ' + link + '</a>';
+    });
+  </script>
+</body>
+</html>
